@@ -1,0 +1,6 @@
+[Desktop Entry]
+Name=NeonWM
+Comment=A beautiful OpenGL Wayland compositor
+Exec=neonwm
+Type=Application
+DesktopNames=NeonWM
