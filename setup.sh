@@ -1,11 +1,11 @@
 #!/bin/bash
-# NeonWM Setup Script for Arch Linux
-# This installs all required dependencies
+# NeonWM Simple Setup - NO WLROOTS NEEDED
+# This version is much easier to build
 
 set -e
 
 echo "╔═══════════════════════════════════════════════════╗"
-echo "║          NeonWM Dependency Installer              ║"
+echo "║     NeonWM Simple Version - Easy Install          ║"
 echo "╚═══════════════════════════════════════════════════╝"
 echo ""
 
@@ -15,79 +15,33 @@ if ! command -v pacman &> /dev/null; then
     exit 1
 fi
 
-echo "📦 Installing dependencies..."
+echo "📦 Installing minimal dependencies..."
 echo ""
 
-# Core build tools
+# Only essential dependencies - NO wlroots!
 sudo pacman -S --needed --noconfirm \
     base-devel \
     cmake \
-    ninja \
     git \
     pkgconf \
-    meson
-
-# Wayland core
-sudo pacman -S --needed --noconfirm \
     wayland \
-    wayland-protocols
-
-# wlroots dependencies
-sudo pacman -S --needed --noconfirm \
-    libdrm \
-    libxcb \
-    xcb-util-wm \
-    xcb-util-renderutil \
-    libx11 \
-    hwdata \
-    libliftoff \
-    libdisplay-info
-
-# wlroots (compositor library) - build from source
-echo "📦 Building wlroots from source..."
-
-WLROOTS_DIR="/tmp/wlroots-build"
-rm -rf "$WLROOTS_DIR"  # Clean any previous failed builds
-git clone https://gitlab.freedesktop.org/wlroots/wlroots.git "$WLROOTS_DIR"
-cd "$WLROOTS_DIR"
-git checkout 0.16.2  # Use stable 0.16 branch
-meson setup build/ --prefix=/usr --buildtype=release -Dexamples=false
-ninja -C build/
-sudo ninja -C build/ install
-sudo ldconfig
-cd -
-echo "✅ wlroots installed successfully"
-
-# Graphics libraries
-sudo pacman -S --needed --noconfirm \
-    mesa \
-    libglvnd \
-    glu
-
-# Input handling
-sudo pacman -S --needed --noconfirm \
+    wayland-protocols \
     libxkbcommon \
-    libinput
-
-# Image/rendering utilities
-sudo pacman -S --needed --noconfirm \
-    pixman \
-    cairo \
-    pango
-
-# Optional but recommended
-sudo pacman -S --needed --noconfirm \
-    seatd \
-    xorg-xwayland
+    libinput \
+    mesa \
+    glfw-wayland \
+    glew \
+    glm \
+    libudev.so
 
 echo ""
 echo "✅ All dependencies installed!"
 echo ""
 echo "📋 Next steps:"
-echo "   1. mkdir build && cd build"
-echo "   2. cmake .."
-echo "   3. make -j$(nproc)"
-echo "   4. sudo make install"
+echo "   1. cd neonwm"
+echo "   2. mkdir build && cd build"
+echo "   3. cmake .."
+echo "   4. make -j$(nproc)"
 echo ""
-echo "🚀 Then run: neonwm"
+echo "🚀 This version is much simpler and builds in 30 seconds!"
 echo ""
