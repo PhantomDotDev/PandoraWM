@@ -32,9 +32,32 @@ sudo pacman -S --needed --noconfirm \
     wayland-protocols
 
 # wlroots (compositor library)
-sudo pacman -S --needed --noconfirm \
-    wlroots \
-    wlroots-git 2>/dev/null || sudo pacman -S --needed --noconfirm wlroots
+echo "Checking for wlroots..."
+if pacman -Ss wlroots | grep -q "extra/wlroots"; then
+    sudo pacman -S --needed --noconfirm wlroots
+elif pacman -Ss wlroots | grep -q "community/wlroots"; then
+    sudo pacman -S --needed --noconfirm wlroots
+else
+    echo "⚠️  wlroots not found in official repos, installing from AUR..."
+    if ! command -v yay &> /dev/null && ! command -v paru &> /dev/null; then
+        echo "Installing yay (AUR helper)..."
+        cd /tmp
+        git clone https://aur.archlinux.org/yay.git
+        cd yay
+        makepkg -si --noconfirm
+        cd -
+    fi
+    
+    if command -v yay &> /dev/null; then
+        yay -S --needed --noconfirm wlroots
+    elif command -v paru &> /dev/null; then
+        paru -S --needed --noconfirm wlroots
+    else
+        echo "❌ Could not install wlroots automatically"
+        echo "Please install manually: yay -S wlroots"
+        exit 1
+    fi
+fi
 
 # Graphics libraries
 sudo pacman -S --needed --noconfirm \
