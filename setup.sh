@@ -1,6 +1,5 @@
 #!/bin/bash
 # NeonWM Setup Script for Arch Linux
-# This installs all required dependencies
 
 set -e
 
@@ -9,7 +8,7 @@ echo "║          NeonWM Dependency Installer              ║"
 echo "╚═══════════════════════════════════════════════════╝"
 echo ""
 
-# Check if running on Arch
+# Ensure Arch Linux
 if ! command -v pacman &> /dev/null; then
     echo "❌ This script is for Arch Linux only!"
     exit 1
@@ -18,77 +17,49 @@ fi
 echo "📦 Installing dependencies..."
 echo ""
 
-# Core build tools
+# Base tools
 sudo pacman -S --needed --noconfirm \
-    base-devel \
-    cmake \
-    ninja \
-    git \
-    pkgconf
+    base-devel cmake ninja git pkgconf \
+    wayland wayland-protocols \
+    mesa libglvnd glu \
+    libxkbcommon libinput \
+    pixman cairo pango \
+    seatd xorg-xwayland
 
-# Wayland core
-sudo pacman -S --needed --noconfirm \
-    wayland \
-    wayland-protocols
+# Detect wlroots versioned package (e.g., wlroots0.18)
+echo "🔍 Checking for wlroots package..."
+WLR_PKG=$(pacman -Ssq "^wlroots0\.[0-9]+$" | sort -V | tail -n1)
 
-# wlroots (compositor library)
-echo "Checking for wlroots..."
-if pacman -Ss wlroots | grep -q "extra/wlroots"; then
-    sudo pacman -S --needed --noconfirm wlroots
-elif pacman -Ss wlroots | grep -q "community/wlroots"; then
-    sudo pacman -S --needed --noconfirm wlroots
+if [[ -n "$WLR_PKG" ]]; then
+    echo "✅ Found wlroots package in repo: $WLR_PKG"
+    sudo pacman -S --needed --noconfirm "$WLR_PKG"
 else
-    echo "⚠️  wlroots not found in official repos, installing from AUR..."
+    echo "⚠️ wlroots not in repo — installing from AUR..."
+
+    # Install AUR helper if missing
     if ! command -v yay &> /dev/null && ! command -v paru &> /dev/null; then
-        echo "Installing yay (AUR helper)..."
-        cd /tmp
-        git clone https://aur.archlinux.org/yay.git
-        cd yay
-        makepkg -si --noconfirm
+        echo "📥 Installing yay (AUR helper)..."
+        cd /tmp && git clone https://aur.archlinux.org/yay.git
+        cd yay && makepkg -si --noconfirm
         cd -
     fi
-    
+
+    # Install wlroots (AUR)
     if command -v yay &> /dev/null; then
         yay -S --needed --noconfirm wlroots
-    elif command -v paru &> /dev/null; then
-        paru -S --needed --noconfirm wlroots
     else
-        echo "❌ Could not install wlroots automatically"
-        echo "Please install manually: yay -S wlroots"
-        exit 1
+        paru -S --needed --noconfirm wlroots
     fi
 fi
-
-# Graphics libraries
-sudo pacman -S --needed --noconfirm \
-    mesa \
-    libglvnd \
-    glu
-
-# Input handling
-sudo pacman -S --needed --noconfirm \
-    libxkbcommon \
-    libinput
-
-# Image/rendering utilities
-sudo pacman -S --needed --noconfirm \
-    pixman \
-    cairo \
-    pango
-
-# Optional but recommended
-sudo pacman -S --needed --noconfirm \
-    seatd \
-    xorg-xwayland
 
 echo ""
 echo "✅ All dependencies installed!"
 echo ""
 echo "📋 Next steps:"
-echo "   1. mkdir build && cd build"
-echo "   2. cmake .."
-echo "   3. make -j$(nproc)"
-echo "   4. sudo make install"
+echo "   mkdir build && cd build"
+echo "   cmake .."
+echo "   make -j$(nproc)"
+echo "   sudo make install"
 echo ""
 echo "🚀 Then run: neonwm"
 echo ""
