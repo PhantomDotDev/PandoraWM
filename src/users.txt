@@ -1,0 +1,14 @@
+# User Database Format
+# username:hwid:role:banned
+# Roles: monthly, lifetime, dev
+# Banned: true/false
+
+# Example users
+john_doe:A1B2C3D4-E5F6-G7H8-I9J0-K1L2M3N4O5P6:monthly:false
+jane_smith:B2C3D4E5-F6G7-H8I9-J0K1-L2M3N4O5P6Q7:lifetime:false
+dev_user:C3D4E5F6-G7H8-I9J0-K1L2-M3N4O5P6Q7R8:dev:false
+
+# Banned user example
+banned_user:D4E5F6G7-H8I9-J0K1-L2M3-N4O5P6Q7R8S9:monthly:true
+
+# Add your users below:
