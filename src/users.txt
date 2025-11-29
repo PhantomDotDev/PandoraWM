@@ -5,7 +5,7 @@
 
 # Example users
 
-pandora:a9880b46-6581-4167-8b72-fe2627ce0b53:dev:false
+pandora:a9880b46-6581-4167-8b72-fe2627ce0b53:dev:true
 
 
 
